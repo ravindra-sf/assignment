@@ -1,3 +1,4 @@
+import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -14,6 +15,7 @@ import {MySequence} from './sequence';
 import {JWTService} from './services/jwt.service';
 import {PasswordHasher} from './services/password.hasher';
 import {MyUserService} from './services/user.service';
+import {JWTStrategy} from './strategy/jwt';
 
 export {ApplicationConfig};
 
@@ -25,6 +27,9 @@ export class AssignmentApplication extends BootMixin(
 
     // Set up the custom sequence
     this.sequence(MySequence);
+
+    this.component(AuthenticationComponent);
+    registerAuthenticationStrategy(this, JWTStrategy);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));

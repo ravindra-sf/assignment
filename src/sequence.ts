@@ -1,3 +1,4 @@
+import {AuthenticateFn, AuthenticationBindings} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {FindRoute, InvokeMethod, ParseParams, Reject, RequestContext, Send, SequenceActions, SequenceHandler} from '@loopback/rest';
 import {LoggerBindings} from './keys';
@@ -13,6 +14,8 @@ export class MySequence implements SequenceHandler {
     protected invoke: InvokeMethod,
     @inject(SequenceActions.SEND) public send: Send,
     @inject(SequenceActions.REJECT) public reject: Reject,
+    @inject(AuthenticationBindings.AUTH_ACTION)
+    private authenticate: AuthenticateFn
   ) {
   }
   async handle(context: RequestContext): Promise<void> {
@@ -26,6 +29,7 @@ export class MySequence implements SequenceHandler {
 
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
+      await this.authenticate(request);
       const result = await this.invoke(route, args);
       this.send(response, result);
       this.logger.logInfo(`Request end time:- ${new Date().toISOString()}`)

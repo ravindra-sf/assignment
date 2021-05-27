@@ -23,7 +23,7 @@ export namespace PasswordHasherBindings {
 }
 
 export namespace UserBindings {
-  export const USER_SERVICE = BindingKey.create<UserService<User, Creds>>('service.jwt.service');
+  export const USER_SERVICE = BindingKey.create<UserService<User, Creds>>('service.user.service');
 }
 
 export namespace LoggerBindings {

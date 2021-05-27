@@ -1,9 +1,11 @@
 // Uncomment these imports to begin using these cool features!
 
 
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
 import {inject} from '@loopback/context';
-import {getJsonSchemaRef, post, requestBody} from '@loopback/openapi-v3';
+import {get, getJsonSchemaRef, post, requestBody} from '@loopback/openapi-v3';
 import {repository} from '@loopback/repository';
+import {UserProfile} from '@loopback/security';
 import {PasswordHasherBindings, TokenServiceBindings, UserBindings} from '../keys';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
@@ -50,8 +52,18 @@ export class UserController {
   @post('/login')
   async login(@requestBody() creds: Creds) {
     validate(creds);
+    console.log(this.userService, "user service");
+
     const user = await this.userService.verifyCredentials(creds);
     const token = await this.jwtService.generateToken(user);
     return {token}
+  }
+
+  @get('/me')
+  @authenticate('jwt')
+  async me(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUser: UserProfile) {
+    return currentUser
   }
 }
